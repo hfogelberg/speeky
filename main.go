@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -9,19 +10,50 @@ import (
 	"strings"
 )
 
-func main() {
-	// voice := "en-GB_KateVoice"
-	voice := "en-US_MichaelVoice"
-	// voice := "en-US_AllisonVoice"
-	// voice := "es-ES_LauraVoice"
-	str := "Hello! How are you doing?"
-	// str := "Hola! Buenos dias! Qúe tal?"
+var t = flag.String("t", "Hello World", "Text to speek")
+var l = flag.String("l", "us", "Language(es, us, uk, de, it, fr, jp, pt)")
+var g = flag.String("g", "f", "Gender (m or f)")
 
-	text := strings.Replace(str, " ", "+", -1)
+func main() {
+	flag.Parse()
+
+	var voice string
+
+	fmt.Printf("%s, %s, %s", *g, *l, *t)
+
+	switch *l {
+	case "pt":
+		voice = "pt-BR_IsabelaVoice"
+	case "jp":
+		voice = "ja-JP_EmiVoice"
+	case "fr":
+		voice = "fr-FR_ReneeVoice"
+	case "it":
+		voice = "it-IT_FrancescaVoice"
+	case "uk":
+		voice = "en-GB_KateVoice"
+	case "us":
+		if *g == "m" {
+			voice = "en-US_MichaelVoice"
+		} else {
+			voice = "en-US_LisaVoice"
+		}
+	case "es":
+		if *g == "m" {
+			voice = "es-ES_EnriqueVoice"
+		} else {
+			voice = "es-ES_LauraVoice"
+		}
+	}
+
+	fmt.Println(voice)
+
+	text := strings.Replace(*t, " ", "+", -1)
 	url := fmt.Sprintf("https://stream.watsonplatform.net/text-to-speech/api/v1/synthesize?accept=audio/mp3&voice=%s&text=%s", voice, text)
+	fmt.Println(url)
 
 	// Create output file
-	output, err := os.Create("talk2.mp3")
+	output, err := os.Create("speeky.mp3")
 	if err != nil {
 		log.Printf("Error creating wav file %s\n", err.Error())
 		return
